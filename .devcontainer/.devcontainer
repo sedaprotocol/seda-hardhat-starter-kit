@@ -1,0 +1,17 @@
+{
+	"name": "seda-hardhat-starter-kit",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"remoteUser": "node",
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"NomicFoundation.hardhat-solidity"
+			]
+		}
+	}
+}
