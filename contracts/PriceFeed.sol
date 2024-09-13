@@ -6,16 +6,16 @@ pragma solidity 0.8.25;
 import "@seda-protocol/contracts/src/SedaProver.sol";
 
 contract PriceFeed {
-    bytes32 data_request_id;
-    bytes32 dr_binary_id;
-    SedaProver seda_prover_contract;
+    bytes32 public data_request_id;
+    bytes32 public dr_binary_id;
+    SedaProver public seda_prover_contract;
 
     constructor(address _seda_prover_contract, bytes32 _dr_binary_id) {
         seda_prover_contract = SedaProver(_seda_prover_contract);
         dr_binary_id = _dr_binary_id;
     }
 
-    function transmit() public {
+    function transmit() public returns (bytes32) {
         bytes memory dr_inputs = "eth-usdc";
         bytes memory tally_inputs = hex"00";
         bytes memory consensus_filter = hex"00";
@@ -23,6 +23,8 @@ contract PriceFeed {
 
         SedaDataTypes.DataRequestInputs memory inputs = SedaDataTypes.DataRequestInputs(dr_binary_id, dr_inputs, dr_binary_id, tally_inputs, 1, consensus_filter, 0, 0, memo);
         data_request_id = seda_prover_contract.postDataRequest(inputs);
+
+        return data_request_id;
     }
 
     function latestAnswer() public view returns (uint128) {
