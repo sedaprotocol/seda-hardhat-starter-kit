@@ -10,7 +10,8 @@
   "description": "",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "hardhat": "^2.22.10"
+    "hardhat": "^2.22.10",
+    "dotenv": "^16.4.5"
   },
   "dependencies": {
     "@seda-protocol/contracts": "0.0.2"
