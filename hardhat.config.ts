@@ -2,6 +2,10 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import dotenv from "dotenv";
 
+// PriceFeed Tasks
+import "./tasks/transmit";
+import "./tasks/latestAnswer";
+
 dotenv.config();
 
 const config: HardhatUserConfig = {
