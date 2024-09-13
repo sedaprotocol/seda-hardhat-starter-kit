@@ -1,3 +1,6 @@
 import { scope } from "hardhat/config";
 
-export const priceFeedScope = scope("pricefeed", "test");
+/**
+ * Defines the scope for pricefeed-related tasks.
+ */
+export const priceFeedScope = scope("pricefeed", "Interact with the PriceFeed contract");

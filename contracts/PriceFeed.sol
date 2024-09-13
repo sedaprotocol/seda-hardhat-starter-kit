@@ -1,41 +1,81 @@
 // SPDX-License-Identifier: MIT
-// NOTICE: this is an example contract and no security considirations are taken into account
-// This contract is in no way secure and acts only as an example of how to create and read Data Requests
+// NOTICE: This is an example contract with no security considerations taken into account.
+// This contract is for educational purposes only and should not be used in production environments.
+
 pragma solidity 0.8.25;
 
 import "@seda-protocol/contracts/src/SedaProver.sol";
 
+/**
+ * @title PriceFeed
+ * @notice This contract demonstrates how to create and interact with data requests on the SEDA network.
+ * It interacts with the SedaProver contract for transmitting data requests and fetching results.
+ */
 contract PriceFeed {
-    bytes32 public data_request_id;
-    bytes32 public dr_binary_id;
-    SedaProver public seda_prover_contract;
+    // ID of the most recent data request.
+    bytes32 public dataRequestId;
 
-    constructor(address _seda_prover_contract, bytes32 _dr_binary_id) {
-        seda_prover_contract = SedaProver(_seda_prover_contract);
-        dr_binary_id = _dr_binary_id;
+    // ID of the data request WASM binary on the SEDA network.
+    bytes32 public oracleProgramId;
+
+    // Instance of the SedaProver contract, which verifies the authenticity of data request results.
+    SedaProver public sedaProverContract;
+
+    /**
+     * @notice Initializes the contract with the SedaProver contract and the binary ID for the data request.
+     * @param _sedaProverContract Address of the deployed SedaProver contract.
+     * @param _oracleProgramId The ID of the WASM binary that handles the data request.
+     */
+    constructor(address _sedaProverContract, bytes32 _oracleProgramId) {
+        sedaProverContract = SedaProver(_sedaProverContract);
+        oracleProgramId = _oracleProgramId;
     }
 
+    /**
+     * @notice Triggers the transmission of new data request to the SEDA network through the SedaProver contract.
+     * @dev This function sends a request to fetch the price of the ETH-USDC pair from the SEDA network.
+     * @return The ID of the newly created data request.
+     */
     function transmit() public returns (bytes32) {
-        bytes memory dr_inputs = "eth-usdc";
-        bytes memory tally_inputs = hex"00";
-        bytes memory consensus_filter = hex"00";
-        bytes memory memo = abi.encodePacked(block.number);
+        SedaDataTypes.DataRequestInputs memory inputs = SedaDataTypes
+            .DataRequestInputs(
+                oracleProgramId,                // Oracle Program ID (0x...)
+                "eth-usdc",                     // Inputs for the data request (ETH-USDC)
+                oracleProgramId,                // Tally binary ID (same as DR binary ID in this example)
+                hex"00",                        // Tally inputs
+                1,                              // Replication factor (number of nodes required to execute the DR)
+                hex"00",                        // Consensus filter (set to `None`)
+                0,                              // Gas price (not used in this example)
+                0,                              // Gas limit (not used in this example)
+                abi.encodePacked(block.number)  // Additional info (block number as memo)
+            );
 
-        SedaDataTypes.DataRequestInputs memory inputs = SedaDataTypes.DataRequestInputs(dr_binary_id, dr_inputs, dr_binary_id, tally_inputs, 1, consensus_filter, 0, 0, memo);
-        data_request_id = seda_prover_contract.postDataRequest(inputs);
+        // Post the data request to the SedaProver contract and store the request ID.
+        dataRequestId = sedaProverContract.postDataRequest(inputs);
 
-        return data_request_id;
+        return dataRequestId;
     }
 
+    /**
+     * @notice Fetches the latest answer for the data request from the SEDA network.
+     * @dev This function retrieves the result of the last data request and returns the price if consensus was reached.
+     * @return The latest price as a uint128, or 0 if no consensus was reached or if no request has been transmitted.
+     */
     function latestAnswer() public view returns (uint128) {
-        SedaDataTypes.DataResult memory data_result = seda_prover_contract.getDataResult(data_request_id);
+        // Ensure a data request has been transmitted.
+        require(dataRequestId != bytes32(0), "No data request transmitted");
 
-        // Check if the data result was in consensus (≥ 66% of nodes agreed on the answer)
+        // Fetch the data result from the SedaProver contract using the stored data request ID.
+        SedaDataTypes.DataResult memory data_result = sedaProverContract
+            .getDataResult(dataRequestId);
+
+        // Check if the data result reached consensus (≥ 66% agreement among nodes).
         if (data_result.consensus) {
             uint128 result = uint128(bytes16(data_result.result));
             return result;
         }
 
+        // Return 0 if no valid result or no consensus.
         return 0;
     }
 }
