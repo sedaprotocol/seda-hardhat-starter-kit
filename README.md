@@ -79,3 +79,7 @@ BASE_SEPOLIA_ETHERSCAN_API_KEY=YOUR_BASESCAN_API_KEY
 
 * [**SEDA Protocol Documentation**](https://docs.seda.xyz): Learn more about how to build on the SEDA network and interact with data requests.
 * [**Hardhat Documentation**](https://hardhat.org/docs): Understand how to use Hardhat for developing, deploying, and testing your contracts.
+
+## License
+
+Contents of this repository are open source under [MIT License](LICENSE).
