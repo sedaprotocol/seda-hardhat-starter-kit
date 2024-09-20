@@ -45,8 +45,8 @@ contract PriceFeed {
                 hex"00",                        // Tally inputs
                 1,                              // Replication factor (number of nodes required to execute the DR)
                 hex"00",                        // Consensus filter (set to `None`)
-                0,                              // Gas price (not used in this example)
-                0,                              // Gas limit (not used in this example)
+                1,                              // Gas price
+                5000000,                        // Gas limit
                 abi.encodePacked(block.number)  // Additional info (block number as memo)
             );
 
@@ -66,13 +66,12 @@ contract PriceFeed {
         require(dataRequestId != bytes32(0), "No data request transmitted");
 
         // Fetch the data result from the SedaProver contract using the stored data request ID.
-        SedaDataTypes.DataResult memory data_result = sedaProverContract
+        SedaDataTypes.DataResult memory dataResult = sedaProverContract
             .getDataResult(dataRequestId);
 
         // Check if the data result reached consensus (≥ 66% agreement among nodes).
-        if (data_result.consensus) {
-            uint128 result = uint128(bytes16(data_result.result));
-            return result;
+        if (dataResult.consensus) {
+            return uint128(bytes16(dataResult.result));
         }
 
         // Return 0 if no valid result or no consensus.
