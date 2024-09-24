@@ -43,7 +43,7 @@ npx hardhat test
 Deploy the `PriceFeed` contract using Hardhat Ignition with a specific SEDA configuration:
 
 ```sh
-npx hardhat ignition deploy ./ignition/modules/PriceFeed.ts --network sepoliaBase --verify
+npx hardhat ignition deploy ./ignition/modules/PriceFeed.ts --network baseSepolia --verify
 ```
 
 > [!NOTE]
