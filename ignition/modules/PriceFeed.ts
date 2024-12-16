@@ -4,24 +4,24 @@ import { getOracleProgramId, getSedaConfig } from "../sedaUtils";
 
 const PriceFeedModule = buildModule("PriceFeedModule", (m) => {
     // PriceFeed contract parameters
-    let proverAddress;
+    let coreAddress;
     let oracleProgramId;
 
     // Fetch network-specific parameters if not on the local hardhat network
     if (network.name !== "hardhat") {
         // Ensure required parameters are available
         const sedaConfig = getSedaConfig(network.name);
-        proverAddress = m.getParameter("sedaProverContract", sedaConfig.proverAddress);
+        coreAddress = m.getParameter("sedaCoreContract", sedaConfig.coreAddress);
         oracleProgramId = m.getParameter("binaryId", getOracleProgramId());
     } else {
         // For local deployments, deploy the SedaProverMock contract
-        const sedaProverMock = m.contract("SedaProverMock", []);
-        proverAddress = sedaProverMock;
+        const sedaCoreMock = m.contract("MockSedaCore", []);
+        coreAddress = sedaCoreMock;
         oracleProgramId = "0x0000000000000000000000000000000000000000000000000000000000000000";
     }
 
     // Deploy the PriceFeed contract with the required parameters
-    const priceFeed = m.contract("PriceFeed", [proverAddress, oracleProgramId]);
+    const priceFeed = m.contract("PriceFeed", [coreAddress, oracleProgramId]);
 
     return { priceFeed: priceFeed };
 });
