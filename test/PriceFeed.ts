@@ -7,18 +7,20 @@ import { ethers } from "hardhat";
 describe("PriceFeed Contract", function () {
     // Setup the fixture to deploy contracts
     async function deployPriceFeedFixture() {
+        const [admin] = await ethers.getSigners();
+
         // A Data Request WASM binary ID (mock value)
         const drBinaryId = ethers.ZeroHash;
 
-        // Deploy a mock of the SedaProver contract
-        const SedaProver = await ethers.getContractFactory("SedaProverMock");
-        const sedaProver = await SedaProver.deploy();
+        // Deploy a mock of the SedaCore contract
+        const SedaCore = await ethers.getContractFactory("MockSedaCore");
+        const core = await SedaCore.deploy();
 
         // Deploy the PriceFeed contract
         const PriceFeed = await ethers.getContractFactory("PriceFeed");
-        const priceFeed = await PriceFeed.deploy(sedaProver.getAddress(), drBinaryId);
+        const priceFeed = await PriceFeed.deploy(core.getAddress(), drBinaryId);
 
-        return { priceFeed, sedaProver };
+        return { priceFeed, core };
     }
 
     /**
@@ -29,7 +31,10 @@ describe("PriceFeed Contract", function () {
         const { priceFeed } = await loadFixture(deployPriceFeedFixture);
 
         // Attempting to call latestAnswer without a transmission should revert
-        await expect(priceFeed.latestAnswer()).to.be.revertedWith("No data request transmitted");
+        await expect(priceFeed.latestAnswer()).to.be.revertedWithCustomError(
+            priceFeed,
+            'RequestNotTransmitted'
+        );
     });
 
     /**
@@ -37,13 +42,16 @@ describe("PriceFeed Contract", function () {
      * Ensure that calling latestAnswer after transmission but without setting a data result reverts.
      */
     it("Should revert if data result is not found", async function () {
-        const { priceFeed } = await loadFixture(deployPriceFeedFixture);
+        const { priceFeed, core } = await loadFixture(deployPriceFeedFixture);
 
         // Transmit the data request (but no result set)
         await priceFeed.transmit();
 
         // latestAnswer should revert due to no data result being set
-        await expect(priceFeed.latestAnswer()).to.be.revertedWith("Data result not found");
+        await expect(priceFeed.latestAnswer()).to.be.revertedWithCustomError(
+            core,
+            'ResultNotFound'
+        );
     });
 
     /**
@@ -51,15 +59,27 @@ describe("PriceFeed Contract", function () {
      * Verify that latestAnswer returns the correct value when consensus is reached.
      */
     it("Should return the correct latest answer if consensus is reached", async function () {
-        const { priceFeed, sedaProver } = await loadFixture(deployPriceFeedFixture);
+        const { priceFeed, core } = await loadFixture(deployPriceFeedFixture);
 
         // Transmit a data request
         await priceFeed.transmit();
-        const dataRequestId = await priceFeed.dataRequestId();
+        const dataRequestId = await priceFeed.requestId();
 
         // Set a data result with consensus in the mock contract
         const resultValue = "0x0000000000000000000000000e9de9b0"; // Mock value (245230000)
-        await sedaProver.setDataResult(dataRequestId, true, resultValue);
+        const result = {
+            version: "0.0.1",
+            drId: dataRequestId,
+            consensus: true,
+            exitCode: 0,
+            result: resultValue,
+            blockHeight: 0,
+            blockTimestamp: Math.floor(Date.now() / 1000) + 3600,
+            gasUsed: 0,
+            paybackAddress: ethers.ZeroAddress,
+            sedaPayload: ethers.ZeroHash,
+        }
+        await core.postResult(result, 0, []);
 
         // latestAnswer should return the expected result when consensus is reached
         const latestAnswer = await priceFeed.latestAnswer();
@@ -71,15 +91,27 @@ describe("PriceFeed Contract", function () {
       * Ensure that latestAnswer returns 0 when no consensus is reached.
       */
     it("Should return latest answer (zero) if consensus is not reached", async function () {
-        const { priceFeed, sedaProver } = await loadFixture(deployPriceFeedFixture);
+        const { priceFeed, core } = await loadFixture(deployPriceFeedFixture);
 
         // Transmit a data request
         await priceFeed.transmit();
-        const dataRequestId = await priceFeed.dataRequestId();
+        const dataRequestId = await priceFeed.requestId();
 
         // Set a data result without consensus (false)
         const resultValue = new ethers.AbiCoder().encode(["uint128"], [BigInt(100)]); // Mock value of 100
-        await sedaProver.setDataResult(dataRequestId, false, resultValue);
+        const result = {
+            version: "0.0.1",
+            drId: dataRequestId,
+            consensus: false,
+            exitCode: 0,
+            result: resultValue,
+            blockHeight: 0,
+            blockTimestamp: Math.floor(Date.now() / 1000) + 3600,
+            gasUsed: 0,
+            paybackAddress: ethers.ZeroAddress,
+            sedaPayload: ethers.ZeroHash,
+        }
+        await core.postResult(result, 0, []);
 
         // latestAnswer should return 0 since no consensus was reached
         const latestAnswer = await priceFeed.latestAnswer();
@@ -94,14 +126,14 @@ describe("PriceFeed Contract", function () {
         const { priceFeed } = await loadFixture(deployPriceFeedFixture);
 
         // Assert data request id is zero
-        let dataRequestId = await priceFeed.dataRequestId();
+        let dataRequestId = await priceFeed.requestId();
         expect(dataRequestId).to.be.equal(ethers.ZeroHash);
 
         // Call the transmit function
         await priceFeed.transmit();
 
         // Check that the data request ID is valid and stored correctly
-        dataRequestId = await priceFeed.dataRequestId();
+        dataRequestId = await priceFeed.requestId();
         expect(dataRequestId).to.not.be.equal(ethers.ZeroHash);
     });
 });
