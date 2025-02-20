@@ -46,13 +46,13 @@ contract PriceFeed {
         SedaDataTypes.RequestInputs memory inputs = SedaDataTypes.RequestInputs(
                 oracleProgramId, // execProgramId (Execution WASM binary ID)
                 bytes("eth-usdc"), // execInputs (Inputs for Execution WASM)
-                300000000000000, // execGasLimit
+                20000000000000, // execGasLimit
                 oracleProgramId, // tallyProgramId (same as execProgramId in this example)
                 hex"00", // tallyInputs
-                300000000000000, // tallyGasLimit
+                10000000000000, // tallyGasLimit
                 1, // replicationFactor (number of required DR executors)
                 hex"00", // consensusFilter (set to `None`)
-                1, // gasPrice (SEDA tokens per gas unit)
+                2000, // gasPrice (SEDA tokens per gas unit)
                 abi.encodePacked(block.number) // memo (Additional public info)
             );
 
