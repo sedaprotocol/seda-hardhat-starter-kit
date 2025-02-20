@@ -14,16 +14,17 @@ const PriceFeedModule = buildModule("PriceFeedModule", (m) => {
         coreAddress = m.getParameter("sedaCoreContract", sedaConfig.coreAddress);
         oracleProgramId = m.getParameter("binaryId", getOracleProgramId());
     } else {
-        // For local deployments, deploy the SedaProverMock contract
-        const sedaCoreMock = m.contract("MockSedaCore", []);
-        coreAddress = sedaCoreMock;
+        // For local deployments, deploy the SedaPermissioned contract
+        const deployer = m.getAccount(0);
+        const sedaPermissioned = m.contract("SedaPermissioned", [[deployer], 1]);
+        coreAddress = sedaPermissioned;
         oracleProgramId = "0x0000000000000000000000000000000000000000000000000000000000000000";
     }
 
     // Deploy the PriceFeed contract with the required parameters
     const priceFeed = m.contract("PriceFeed", [coreAddress, oracleProgramId]);
 
-    return { priceFeed: priceFeed };
+    return { priceFeed };
 });
 
 export default PriceFeedModule;

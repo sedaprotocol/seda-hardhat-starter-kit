@@ -12,15 +12,16 @@ describe("PriceFeed Contract", function () {
         // A Data Request WASM binary ID (mock value)
         const drBinaryId = ethers.ZeroHash;
 
-        // Deploy a mock of the SedaCore contract
-        const SedaCore = await ethers.getContractFactory("MockSedaCore");
-        const core = await SedaCore.deploy();
+        // Deploy SedaPermissioned
+        const SedaCore = await ethers.getContractFactory("SedaPermissioned");
+        // Initialize with admin as the relayer and a max replication factor of 1
+        const core = await SedaCore.deploy([admin.address], 1);
 
         // Deploy the PriceFeed contract
         const PriceFeed = await ethers.getContractFactory("PriceFeed");
         const priceFeed = await PriceFeed.deploy(core.getAddress(), drBinaryId);
 
-        return { priceFeed, core };
+        return { priceFeed, core, admin };
     }
 
     /**
@@ -65,7 +66,7 @@ describe("PriceFeed Contract", function () {
         await priceFeed.transmit();
         const dataRequestId = await priceFeed.requestId();
 
-        // Set a data result with consensus in the mock contract
+        // Set a data result with consensus in the contract
         const resultValue = "0x0000000000000000000000000e9de9b0"; // Mock value (245230000)
         const result = {
             version: "0.0.1",
