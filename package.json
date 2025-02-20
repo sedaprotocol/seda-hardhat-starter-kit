@@ -16,6 +16,6 @@
     "rimraf": "^6.0.1"
   },
   "dependencies": {
-    "@seda-protocol/evm": "0.0.4"
+    "@seda-protocol/evm": "0.5.3"
   }
 }
