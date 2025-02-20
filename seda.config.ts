@@ -4,27 +4,27 @@ export interface SedaConfig {
 
 export const networkConfigs: { [network: string]: SedaConfig } = {
   arbitrumSepolia: {
-    coreAddress: "0xb5b83ca54daeb0c5eec63dac7c92981996083b4a",
+    coreAddress: "0x23f48aF75FAf636C04404559f147b1f869468Bf0",
   },
   baseSepolia: {
-    coreAddress: "0x42ee3e29ebae162d43a9efd93224a9bd32d1ebc4",
+    coreAddress: "0x947ACD63051123AEb408C30F99629a33ad45A332",
   },
   berachainBartio: {
-    coreAddress: "0x511eac94EF52b2bb358a5162db632F38987591bF",
+    coreAddress: "0x1196A95DC50C41745D8aDb6d81e1D3e7c0C10886",
   },
   flowTestnet: {
-    coreAddress: "0xaa88065032A8ee4C364Cb3C69744A9f976402388",
+    coreAddress: "0xfEa3d44F35885F27E6B8afa254F48BC3B9344710",
   },
   holesky: {
-    coreAddress: "0x83D2660c4aE8F5685B022c3e6bc9F6D3Ef60eF45",
+    coreAddress: "0x6b7edf46c6788767fed40361E015d4195802719E",
   },
   inkSepolia: {
-    coreAddress: "0x93EAE6368b56383485645d2EebdCE4fF9f77d72C",
+    coreAddress: "0x8A3293f9779Bb66c3D59D9e7131089B684E9C07f",
   },
   seiTestnet: {
-    coreAddress: "0x83D2660c4aE8F5685B022c3e6bc9F6D3Ef60eF45",
+    coreAddress: "0xFC56540ff9f914Ea66d9783890B50385132548DB",
   },
   unichainSepolia: {
-    coreAddress: "0xFFCd728685029dA7c72875C1c03b6960E3d94334",
+    coreAddress: "0x132813598863b764039ac08869385e45E2D8D34b",
   },
 };
