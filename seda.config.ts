@@ -9,9 +9,6 @@ export const networkConfigs: { [network: string]: SedaConfig } = {
   baseSepolia: {
     coreAddress: "0x947ACD63051123AEb408C30F99629a33ad45A332",
   },
-  berachainBartio: {
-    coreAddress: "0x1196A95DC50C41745D8aDb6d81e1D3e7c0C10886",
-  },
   flowTestnet: {
     coreAddress: "0xfEa3d44F35885F27E6B8afa254F48BC3B9344710",
   },

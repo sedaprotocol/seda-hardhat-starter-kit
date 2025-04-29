@@ -21,11 +21,6 @@ const config: HardhatUserConfig = {
       url: 'https://sepolia.base.org',
       chainId: 84532,
     },
-    berachainBartio: {
-      accounts: [process.env.EVM_PRIVATE_KEY || ""],
-      url: 'https://bartio.rpc.berachain.com',
-      chainId: 80084,
-    },
     flowTestnet: {
       accounts: [process.env.EVM_PRIVATE_KEY || ""],
       url: 'https://testnet.evm.nodes.onflow.org',
@@ -70,14 +65,6 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: 'https://api-sepolia.uniscan.xyz/api',
           browserURL: 'https://sepolia.uniscan.xyz',
-        }
-      },
-      {
-        chainId: 80084,
-        network: 'berachainBartio',
-        urls: {
-          apiURL: 'https://api.routescan.io/v2/network/testnet/evm/80084/etherscan/api',
-          browserURL: 'https://bartio.beratrail.io',
         }
       },
       {
