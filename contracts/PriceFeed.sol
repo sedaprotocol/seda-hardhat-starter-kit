@@ -49,7 +49,7 @@ contract PriceFeed {
                 20000000000000, // execGasLimit
                 oracleProgramId, // tallyProgramId (same as execProgramId in this example)
                 hex"00", // tallyInputs
-                10000000000000, // tallyGasLimit
+                20000000000000, // tallyGasLimit
                 1, // replicationFactor (number of required DR executors)
                 hex"00", // consensusFilter (set to `None`)
                 2000, // gasPrice (SEDA tokens per gas unit)
