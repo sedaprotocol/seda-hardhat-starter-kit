@@ -1,6 +1,6 @@
-import * as fs from "fs";
-import * as path from "path";
-import { NetworkConfig } from "hardhat/types";
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import type { NetworkConfig } from 'hardhat/types';
 
 /**
  * Helper function to fetch the deployed contract address from the ignition deployment file.
@@ -11,7 +11,10 @@ import { NetworkConfig } from "hardhat/types";
  */
 export function getDeployedContract(network: NetworkConfig, contractName: string): string {
   // Hard-coded deployment path based on network's chain ID
-  const deploymentPath = path.join(__dirname, `../ignition/deployments/chain-${network.chainId}/deployed_addresses.json`);
+  const deploymentPath = path.join(
+    __dirname,
+    `../ignition/deployments/chain-${network.chainId}/deployed_addresses.json`,
+  );
 
   // Check if the deployment file exists
   if (!fs.existsSync(deploymentPath)) {
@@ -19,7 +22,7 @@ export function getDeployedContract(network: NetworkConfig, contractName: string
   }
 
   // Parse the deployment JSON file to fetch contract addresses
-  const deployment = JSON.parse(fs.readFileSync(deploymentPath, "utf-8"));
+  const deployment = JSON.parse(fs.readFileSync(deploymentPath, 'utf-8'));
 
   // Retrieve the contract address using the contract name as a key
   const address = deployment[contractName];

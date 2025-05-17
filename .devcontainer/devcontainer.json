@@ -1,26 +1,26 @@
 {
-	"name": "seda-hardhat-starter-kit",
-	"build": {
-		"dockerfile": "Dockerfile"
-	},
-	"remoteUser": "node",
-	"features": {
-		"ghcr.io/devcontainers/features/node:1": {},
-		"ghcr.io/devcontainers/features/git:1": {},
-		"ghcr.io/devcontainers/features/common-utils:2": {
-			"installZsh": true,
-			"configureZshAsDefaultShell": true,
-			"installOhMyZsh": true
-		}
-	},
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"NomicFoundation.hardhat-solidity",
-				"EditorConfig.EditorConfig",
+  "name": "seda-hardhat-starter-kit",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "node",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": true
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "NomicFoundation.hardhat-solidity",
+        "EditorConfig.EditorConfig",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode"
-			]
-		}
-	}
+      ]
+    }
+  }
 }

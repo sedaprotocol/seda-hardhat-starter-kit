@@ -1,5 +1,5 @@
-import dotenv from "dotenv";
-import { SedaConfig, networkConfigs } from "../seda.config"
+import dotenv from 'dotenv';
+import { type SedaConfig, networkConfigs } from '../seda.config';
 
 dotenv.config();
 
@@ -11,9 +11,9 @@ dotenv.config();
  */
 export function getSedaConfig(network: string): SedaConfig {
   const config = networkConfigs[network];
-    if (!config) {
-      throw new Error(`SEDA network configuration for ${network} not found`);
-    }
+  if (!config) {
+    throw new Error(`SEDA network configuration for ${network} not found`);
+  }
 
   return config;
 }
@@ -26,7 +26,7 @@ export function getSedaConfig(network: string): SedaConfig {
  */
 export function getOracleProgramId(): string {
   // Retrieve Oracle Program ID from environment variables
-  const oracleProgramId = process.env.ORACLE_PROGRAM_ID || "";
+  const oracleProgramId = process.env.ORACLE_PROGRAM_ID || '';
 
   // Check if the Oracle Program ID is not empty
   if (!oracleProgramId) {
@@ -34,7 +34,7 @@ export function getOracleProgramId(): string {
   }
 
   // Ensure the Oracle Program ID is properly formatted as a hex string
-  if (oracleProgramId.startsWith("0x")) {
+  if (oracleProgramId.startsWith('0x')) {
     return oracleProgramId;
   }
 

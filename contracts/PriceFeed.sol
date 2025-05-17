@@ -4,10 +4,10 @@
  * It is for educational purposes only and should not be used in production.
  */
 
-pragma solidity 0.8.25;
+pragma solidity 0.8.28;
 
-import "@seda-protocol/evm/contracts/interfaces/ISedaCore.sol";
-import "@seda-protocol/evm/contracts/libraries/SedaDataTypes.sol";
+import {ISedaCore} from "@seda-protocol/evm/contracts/interfaces/ISedaCore.sol";
+import {SedaDataTypes} from "@seda-protocol/evm/contracts/libraries/SedaDataTypes.sol";
 
 /**
  * @title PriceFeed
@@ -16,10 +16,10 @@ import "@seda-protocol/evm/contracts/libraries/SedaDataTypes.sol";
  */
 contract PriceFeed {
     /// @notice Instance of the SedaCore contract
-    ISedaCore public immutable sedaCore;
+    ISedaCore public immutable SEDA_CORE;
 
     /// @notice ID of the request WASM binary on the SEDA network
-    bytes32 public immutable oracleProgramId;
+    bytes32 public immutable ORACLE_PROGRAM_ID;
 
     /// @notice ID of the most recent request
     bytes32 public requestId;
@@ -33,30 +33,34 @@ contract PriceFeed {
      * @param _oracleProgramId ID of the WASM binary for handling requests
      */
     constructor(address _sedaCoreAddress, bytes32 _oracleProgramId) {
-        sedaCore = ISedaCore(_sedaCoreAddress);
-        oracleProgramId = _oracleProgramId;
+        SEDA_CORE = ISedaCore(_sedaCoreAddress);
+        ORACLE_PROGRAM_ID = _oracleProgramId;
     }
 
     /**
      * @notice Creates a new ETH-USDC price request on the SEDA network
      * @dev Demonstrates how to structure and send a request to SEDA
+     * @param requestFee The fee for the request
+     * @param resultFee The fee for the result
+     * @param batchFee The fee for the batch
      * @return The ID of the created request
      */
-    function transmit() public returns (bytes32) {
+    function transmit(uint256 requestFee, uint256 resultFee, uint256 batchFee) external payable returns (bytes32) {
         SedaDataTypes.RequestInputs memory inputs = SedaDataTypes.RequestInputs(
-                oracleProgramId, // execProgramId (Execution WASM binary ID)
-                bytes("eth-usdc"), // execInputs (Inputs for Execution WASM)
-                20000000000000, // execGasLimit
-                oracleProgramId, // tallyProgramId (same as execProgramId in this example)
-                hex"00", // tallyInputs
-                20000000000000, // tallyGasLimit
-                1, // replicationFactor (number of required DR executors)
-                hex"00", // consensusFilter (set to `None`)
-                2000, // gasPrice (SEDA tokens per gas unit)
-                abi.encodePacked(block.number) // memo (Additional public info)
-            );
+            ORACLE_PROGRAM_ID, // execProgramId (Execution WASM binary ID)
+            bytes("eth-usdc"), // execInputs (Inputs for Execution WASM)
+            20000000000000, // execGasLimit
+            ORACLE_PROGRAM_ID, // tallyProgramId (same as execProgramId in this example)
+            hex"00", // tallyInputs
+            20000000000000, // tallyGasLimit
+            1, // replicationFactor (number of required DR executors)
+            hex"00", // consensusFilter (set to `None`)
+            2000, // gasPrice (SEDA tokens per gas unit)
+            abi.encodePacked(block.number) // memo (Additional public info)
+        );
 
-        requestId = sedaCore.postRequest(inputs);
+        // Pass the msg.value as fees to the SEDA core
+        requestId = SEDA_CORE.postRequest{value: msg.value}(inputs, requestFee, resultFee, batchFee);
         return requestId;
     }
 
@@ -68,7 +72,7 @@ contract PriceFeed {
     function latestAnswer() public view returns (uint128) {
         if (requestId == bytes32(0)) revert RequestNotTransmitted();
 
-        SedaDataTypes.Result memory result = sedaCore.getResult(requestId);
+        SedaDataTypes.Result memory result = SEDA_CORE.getResult(requestId);
 
         if (result.consensus) {
             return uint128(bytes16(result.result));
