@@ -17,7 +17,7 @@ Clone the repository and install the dependencies:
 ```sh
 git clone git@github.com:sedaprotocol/seda-hardhat-starter-kit.git
 cd seda-hardhat-starter-kit
-npm install
+bun install
 ```
 
 ### Project Structure
@@ -34,8 +34,8 @@ This project follows the structure of a typical Hardhat project:
 Compile your contracts and run tests to ensure everything works correctly:
 
 ```sh
-npx hardhat compile
-npx hardhat test
+bun run compile
+bun run test
 ```
 
 ## Deploying the Contracts
@@ -43,13 +43,13 @@ npx hardhat test
 Deploy the `PriceFeed` contract using Hardhat Ignition with a specific SEDA configuration:
 
 ```sh
-npx hardhat ignition deploy ./ignition/modules/PriceFeed.ts
+bunx hardhat ignition deploy ./ignition/modules/PriceFeed.ts
 ```
 
 To deploy to a specific network, use the `--network` flag followed by the network name (e.g. baseSepolia, goerli). You can also add the `--verify` flag to automatically verify the contract's source code on the network's block explorer after deployment.
 
 ```sh
-npx hardhat ignition deploy ./ignition/modules/PriceFeed.ts --network baseSepolia --verify
+bunx hardhat ignition deploy ./ignition/modules/PriceFeed.ts --network baseSepolia --verify
 ```
 
 > [!NOTE]
@@ -62,13 +62,13 @@ Use Hardhat tasks specifically designed for interacting with the PriceFeed contr
 **Transmit a Data Request**: Calls the transmit function on PriceFeed to trigger a data request post on the SEDA network.
 
 ```sh
-npx hardhat pricefeed transmit --network <network_name>
+bunx hardhat pricefeed transmit --network baseSepolia
 ```
 
 **Fetch Latest Answer**: Calls the latestAnswer function on PriceFeed to get the result of the data request.
 
 ```sh
-npx hardhat pricefeed latest-answer --network <network_name>
+bunx hardhat pricefeed latest-answer --network baseSepolia
 ```
 
 ## Environment Variables
